@@ -53,7 +53,7 @@ function neuralLayer(size, in_size) {
   return layer;
 }
 
-exports.neuralNetwork = function() {
+function neuralNetwork() {
   var netObj = {};
   netObj.input_layer = [];
   netObj.hidden_layers = [];
@@ -79,7 +79,7 @@ exports.neuralNetwork = function() {
 
     // Output Error
     for(var i = 0; i < targets.length; i++) {
-      var out = this.output_layer[i].output;
+      var out = this.output_layer.neurons[i].output;
       output_error[i] = (targets[i] - out) * (1 - out) * out;
     }
     // Hidden Error
@@ -103,7 +103,7 @@ exports.neuralNetwork = function() {
       for(var j = 0; j < hidden_size; j++) {
         for(var k = 0; k < this.hidden_layers[i].neurons[j].weights.length; k++) {
           var out = this.hidden_layers[i].neurons[j].output;
-          this.hidden_layers.neurons[j].weights[k] += hidden_errors[i][j] * nonlinearDerivative(out);
+          this.hidden_layers[i].neurons[j].weights[k] += hidden_error[i][j] * nonlinearDerivative(out);
         }
       }
     }

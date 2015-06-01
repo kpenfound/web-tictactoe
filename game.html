@@ -1,0 +1,18 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <script type="text/javascript" src="./neuralnet.js"></script>
+    <script type="text/javascript" src="./tictactoe.js"></script>
+    <script>
+      window.onload = function() {
+        initialize();
+        var canvas = document.getElementById('myCanvas');
+        canvas.addEventListener('mousedown', clickBoard, false);
+        setInterval(drawBoard, 100);
+      };
+    </script>
+  </head>
+  <body>
+    <canvas id="myCanvas" width="600px" height="600px"></canvas>
+  </body>
+</html>
