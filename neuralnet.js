@@ -1,10 +1,10 @@
 var input_size = 9;
 var hidden_size = 9;
-var num_hidden_layers = 9;
+var num_hidden_layers = 4;
 var output_size = 9;
 
 function nonlinearFunc(a) {
-  return 1 / (1 + Math.exp(a));
+  return 1 / (1 + Math.exp(-1 * a));
 }
 
 function nonlinearDerivative(a) {
@@ -16,7 +16,7 @@ function neuron(in_size) {
   neuronObj.weights = [];
   neuronObj.output = 0;
   for(var i = 0; i < in_size; i++) {
-    neuronObj.weights[i] = Math.random() / ((hidden_size / 2) - 0.5);
+    neuronObj.weights[i] = Math.random() / (hidden_size / 2);
   }
 
   neuronObj.update = function(ins) {

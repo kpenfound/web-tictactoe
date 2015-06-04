@@ -89,9 +89,9 @@ function aiPlayer() {
       var targets = [];
       for(var i = 0; i < b.length; i++) {
         if(b[i] === 0) {
-          targets[i] = 0.7;
+          targets[i] = 0.9;
         } else {
-          targets[i] = 0.3;
+          targets[i] = 0.1;
         }
       }
       this.nn.backpropagate(targets);
