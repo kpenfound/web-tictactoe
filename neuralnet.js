@@ -20,11 +20,11 @@ function neuron(in_size) {
   }
 
   neuronObj.update = function(ins) {
-    this.output = 0;
-    for(var i = 0; i < this.weights.size; i++) {
-      this.output += this.weights[i] * ins[i];
+    var sum = 0;
+    for(var i = 0; i < this.weights.length; i++) {
+      sum += this.weights[i] * ins[i];
     }
-    this.output = nonlinearFunc(this.output);
+    this.output = nonlinearFunc(sum);
   };
   return neuronObj;
 }
@@ -37,14 +37,14 @@ function neuralLayer(size, in_size) {
   }
 
   layer.update = function(inputs) {
-    for(var i = 0; i < this.neurons.size; i++) {
+    for(var i = 0; i < this.neurons.length; i++) {
       this.neurons[i].update(inputs);
     }
   };
 
   layer.get_outputs = function() {
     var outputs = [];
-    for(var i = 0; i < this.neurons.size; i++) {
+    for(var i = 0; i < this.neurons.length; i++) {
       outputs[i] = this.neurons[i].output;
     }
     return outputs;

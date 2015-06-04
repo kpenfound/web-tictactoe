@@ -35,12 +35,13 @@ function game() {
   };
 
   gameObj.hasWinner = function() {
+    drawBoard();
     var b = this.board; // For brevity
     // Rows / Columns
     for(i = 0; i < row_size; i++) {
-      if(Math.abs(b[(i * board_size)] + b[(i * board_size) + 1] + b[(i * board_size) + 2]) === 3)
+      if(Math.abs(b[(i * row_size)] + b[(i * row_size) + 1] + b[(i * row_size) + 2]) === 3)
         return b[(i * board_size)];
-      if(Math.abs(b[i] + b[i + board_size] + b[i + board_size + board_size]) === 3)
+      if(Math.abs(b[i] + b[i + row_size] + b[i + row_size + row_size]) === 3)
         return b[i];
     }
 
@@ -71,7 +72,7 @@ function aiPlayer() {
   player.nn = neuralNetwork();
 
   player.pickMove = function(game) {
-    var move = 0;
+    var move = Math.floor(Math.random() * board_size);
     this.nn.update(game.board);
     var outs = this.nn.output_layer.get_outputs();
     for(var i = 0; i < outs.length; i++) {
@@ -83,16 +84,17 @@ function aiPlayer() {
 
   player.makeMove = function(game) {
     var move = this.pickMove(game);
-    while(! game.makeMove(move)) {
+    while(! game.makeMove(move, 1)) {
       var b = game.board;
+      var targets = [];
       for(var i = 0; i < b.length; i++) {
         if(b[i] === 0) {
-          b[i] = 0.9;
+          targets[i] = 0.7;
         } else {
-          b[i] = 0.1;
+          targets[i] = 0.3;
         }
       }
-      this.nn.backpropagate(b);
+      this.nn.backpropagate(targets);
       move = this.pickMove(game);
     }
 
@@ -104,7 +106,7 @@ function aiPlayer() {
       var turn = 2;
       if(winner === -1)
         turn = 1;
-      while(turn < board_size) {
+      while(turn < game_object.turn) {
         var move = [];
         for(var i = 0; i < board_size; i++) {
           move[i] = 0;
@@ -112,8 +114,8 @@ function aiPlayer() {
             move[i] = 1;
           }
         }
-        nn.update(game.turns[turn]);
-        nn.backpropagate(move);
+        this.nn.update(game.turns[turn]);
+        this.nn.backpropagate(move);
         turn++;
       }
     }
@@ -132,12 +134,17 @@ function initialize() {
 
   ai_player.makeMove(game_object);
   users_turn = true;
+  drawBoard();
 }
 
 function reset() {
   var winner = game_object.hasWinner();
   ai_player.endGame(game_object, winner);
   game_object.reset();
+
+  ai_player.makeMove(game_object);
+  users_turn = true;
+  drawBoard();
 }
 
 function playerTurn(space) {
@@ -173,15 +180,15 @@ function drawBoard() {
   drawLine(0, 2 * context_size / 3, context_size, 2 * context_size / 3, 'black');
 
   for(var i = 0; i < board_size; i++) {
-    var x = Math.floor(i / row_size) * (context_size / 3);
-    x =+ (context_size / 6);
-    var y = Math.floor(i % row_size) * (context_size / 3);
-    y =+ (context_size / 6);
-    size = context_size / 7;
-    if(game_object[i] === 1) {
+    var x = Math.floor(i % row_size) * (context_size / 3);
+    x += (context_size / 6);
+    var y = Math.floor(i / row_size) * (context_size / 3);
+    y += (context_size / 6);
+    size = context_size / 8;
+    if(game_object.board[i] === 1) {
       drawLine(x - size, y - size, x + size, y + size, 'red');
       drawLine(x - size, y + size, x + size, y - size, 'red');
-    } else if(game_object[i] === -1) {
+    } else if(game_object.board[i] === -1) {
       drawCircle(x, y, size, 'green');
     }
   }
@@ -190,7 +197,7 @@ function drawLine(x1, y1, x2, y2, color) {
   context.beginPath();
   context.moveTo(x1, y1);
   context.lineTo(x2, y2);
-  context.lineWidth = 5;
+  context.lineWidth = 7;
   context.strokeStyle = color;
   context.lineCap = "round";
   context.stroke();
@@ -198,13 +205,13 @@ function drawLine(x1, y1, x2, y2, color) {
 function drawCircle(x, y, rad, color) {
   context.beginPath();
   context.arc(x, y, rad, 0, Math.PI * 2);
-  context.lineWidth = 5;
+  context.lineWidth = 7;
   context.strokeStyle = color;
   context.stroke();
 }
 function clickBoard(event) {
-  var x = Math.floor(context_size / event.pageX);
-  var y = Math.floor(context_size / event.pageY);
+  var x = Math.floor(event.pageX / (context_size / row_size));
+  var y = Math.floor(event.pageY / (context_size / row_size));
   var move = (y * row_size) + x;
   if(users_turn)
     playerTurn(move);
