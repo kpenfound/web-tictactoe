@@ -4,11 +4,11 @@ var num_hidden_layers = 9;
 var output_size = 9;
 
 function nonlinearFunc(a) {
-  return Math.tanh(a);
+  return 1 / (1 + Math.exp(a));
 }
 
 function nonlinearDerivative(a) {
-  return 1 - (Math.tanh(a) * Math.tanh(a));
+  return nonlinearFunc(a) * (1 - nonlinearFunc(a));
 }
 
 function neuron(in_size) {
@@ -16,7 +16,7 @@ function neuron(in_size) {
   neuronObj.weights = [];
   neuronObj.output = 0;
   for(var i = 0; i < in_size; i++) {
-    neuronObj.weights[i] = Math.random() / hidden_size;
+    neuronObj.weights[i] = Math.random() / ((hidden_size / 2) - 0.5);
   }
 
   neuronObj.update = function(ins) {
