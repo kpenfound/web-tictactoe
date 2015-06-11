@@ -5,6 +5,7 @@ var ai_player;
 var users_turn;
 var context;
 var context_size;
+var tie_count;
 
 function game() {
   var gameObj = {};
@@ -13,6 +14,7 @@ function game() {
   gameObj.moves = [];
   gameObj.turns = [];
   gameObj.turn = 0;
+  tie_count = 0;
 
   for(var i = 0; i < board_size; i++) {
     gameObj.board[i] = 0;
@@ -154,18 +156,30 @@ function playerTurn(space) {
       ai_player.makeMove(game_object);
       if(game_object.hasWinner() === -2) {
         alert("Tied!");
+        tie_count++;
+        if(tie_count === 3) {
+          easterEgg();
+          tie_count = 0;
+        }
         reset();
       } else if(game_object.hasWinner() !== 0) {
         alert("You lose! :(");
+        tie_count = 0;
         reset();
       } else {
         users_turn = true;
       }
     } else if(game_object.hasWinner() !== -2){
       alert("You win!");
+      tie_count = 0;
       reset();
     } else {
       alert("Tied!");
+      tie_count++;
+      if(tie_count === 3) {
+        easterEgg();
+        tie_count = 0;
+      }
       reset();
     }
   }
@@ -215,4 +229,20 @@ function clickBoard(event) {
   var move = (y * row_size) + x;
   if(users_turn)
     playerTurn(move);
+}
+
+function easterEgg() {
+  var interval = window.setInterval(function() {
+    var p = -1;
+    if(Math.random() > 0.5) { p = 1; }
+
+    var space = Math.floor(Math.random() * 9);
+    game_object.board[space] = p;
+    drawBoard();
+  }, 10);
+  window.setTimeout(function() {
+    window.clearInterval(interval);
+    alert("A strange game... The only winning move is not to play.");
+    reset();
+  }, 5000);
 }
